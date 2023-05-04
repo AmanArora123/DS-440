@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+rm(list=ls())
+library(ggplot2)
+library(readr)
+library(dplyr)
+library(esquisse)
+library(data.table)
+```
+
+
+```{r}
+J_Nearest <- fread('~/Documents/Ds 440/J_nearest_clusters_D1_D2_union.csv')
+Cluster_D1 <- fread('~/Documents/Ds 440/Clusters_Summary_267OHE_k267_day1.csv')
+Cluster_D2 <- fread('~/Documents/Ds 440/Clusters_Summary_267OHE_k267_day2.csv')
+
+```
+
+
+```{r}
+cluster_summary_D1 <- Cluster_D1 %>%
+  group_by(`cluster ID`) %>%
+  summarize(total_size = sum(size)) %>%
+  arrange(desc(total_size))
+
+head(cluster_summary_D1)
+tail(cluster_summary_D1)
+```
+
+```{r}
+cluster_summary_D2 <- Cluster_D2 %>%
+  group_by(`cluster ID`) %>%
+  summarize(total_size = sum(size)) %>%
+  arrange(desc(total_size))
+
+head(cluster_summary_D2)
+tail(cluster_summary_D2)
+```
+
+```{r}
+ggplot(J_Nearest) +
+  aes(x = Similarity) +
+  geom_histogram(bins = 39L, fill = "#23A62B") +
+  labs(title = "Similarity Plot") +
+  theme_minimal() +
+  xlim(0, 1)
+```
+
+
+```{r}
+J_Nearest %>%
+ filter(D2Csize >= 6L & D2Csize <= 6010L) %>%
+ filter(D1Csize >= 7L & D1Csize <= 6004L) %>%
+ ggplot() +
+  aes(x = D1Csize, y = D2Csize, colour = Similarity) +
+  geom_point(shape = "square", size = 1.5) +
+  scale_color_viridis_c(option = "plasma", direction = 1) +
+  labs(title = "Day 1 Size VS Day 2 Size") +
+  theme_minimal()
+```
+
+
+
+```{r}
+ggplot(J_Nearest) +
+  aes(x = D1NearestCindex, y = D2Cindex, colour = Similarity) +
+  geom_point(shape = "circle", size = 1.5) +
+  scale_color_viridis_c(option = "viridis", direction = 1) +
+  labs(title = "Day1 Nearest Index Vs Day 2 Index") +
+  theme_minimal()
+```
+
